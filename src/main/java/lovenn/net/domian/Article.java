@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class Article {
 
-    private Long id;
+    private String id;
 
     private String title;
 
@@ -12,15 +12,15 @@ public class Article {
 
     private String poster;
 
-    private Long time;
+    private String time;
 
-    private Integer votes;
+    private String votes;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -48,19 +48,19 @@ public class Article {
         this.poster = poster;
     }
 
-    public Long getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(Long time) {
+    public void setTime(String time) {
         this.time = time;
     }
 
-    public Integer getVotes() {
+    public String getVotes() {
         return votes;
     }
 
-    public void setVotes(Integer votes) {
+    public void setVotes(String votes) {
         this.votes = votes;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 @Service("articleService")
 public class ArticleServiceImpl implements ArticleService {
@@ -20,6 +21,11 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public void vote(User user, Article article) {
-        jedisService.zscore("time:", article)
+
+        long cutoff = new Date().getTime() - ONE_WEEK_IN_SECONDS;
+        Double score_time = jedisService.zscore("articles:time", article.getId());
+        if(score_time != null && score_time < cutoff) {
+            return;
+        }
     }
 }
