@@ -4,7 +4,7 @@ public class User {
 
     private String name;
 
-    private Long userId;
+    private String userId;
 
     public String getName() {
         return name;
@@ -14,11 +14,11 @@ public class User {
         this.name = name;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 }
