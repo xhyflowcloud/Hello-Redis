@@ -8,10 +8,10 @@ import org.springframework.core.io.Resource;
 @SpringBootConfiguration
 public class PropertyConfig {
 
-    public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
-        PropertyPlaceholderConfigurer propertyPlaceholderConfigurer = new PropertyPlaceholderConfigurer();
-        Resource resource = new ClassPathResource("classpath:application.properties");
-        propertyPlaceholderConfigurer.setLocation(resource);
-        return propertyPlaceholderConfigurer;
-    }
+//    public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
+//        PropertyPlaceholderConfigurer propertyPlaceholderConfigurer = new PropertyPlaceholderConfigurer();
+//        Resource resource = new ClassPathResource("classpath:application.properties");
+//        propertyPlaceholderConfigurer.setLocation(resource);
+//        return propertyPlaceholderConfigurer;
+//    }
 }

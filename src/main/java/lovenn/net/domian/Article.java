@@ -63,4 +63,16 @@ public class Article {
     public void setVotes(String votes) {
         this.votes = votes;
     }
+
+    @Override
+    public String toString() {
+        return "Article{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", link='" + link + '\'' +
+                ", poster='" + poster + '\'' +
+                ", time='" + time + '\'' +
+                ", votes='" + votes + '\'' +
+                '}';
+    }
 }

@@ -32,18 +32,19 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public void vote(User user, Article article) {
-
         long cutoff = System.currentTimeMillis()/1000 - ONE_WEEK_IN_SECONDS;
-        Double scoreTime = jedisService.zscore("articles:time", article.getId());
-        if(scoreTime != null && scoreTime < cutoff) return;
+        String scoreTime = jedisService.hget("articles:" + article.getId(), "time");
+        if(scoreTime != null && Long.valueOf(scoreTime) < cutoff) return;
         jedisService.sadd("voted:" + article.getId(), user.getUserId());
-        jedisService.zincrby("articles:score", VOTE_SCORE, article.getId());
+        jedisService.zincrby("articles:score", VOTE_SCORE, "article:" + article.getId());
         jedisService.hincrBy("article:" + article.getId(), "votes", 1);
     }
 
     @Override
     public void post(User user, Article article) {
         article.setId(String.valueOf(defaultGenerator.generate()));
+        article.setPoster(user.getUserId());
+        article.setVotes("0");
         //当前秒数
         long now = System.currentTimeMillis()/1000;
         article.setTime(String.valueOf(now));
