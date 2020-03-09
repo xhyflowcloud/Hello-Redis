@@ -1,20 +1,20 @@
 package lovenn.net.domian;
 
-import java.util.Date;
-
 public class Article {
 
     private String id;
 
     private String title;
 
-    private String link;
+    private String content;
 
     private String poster;
 
     private String time;
 
     private String votes;
+
+    private boolean canVote;
 
     public String getId() {
         return id;
@@ -32,12 +32,12 @@ public class Article {
         this.title = title;
     }
 
-    public String getLink() {
-        return link;
+    public String getContent() {
+        return content;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getPoster() {
@@ -64,15 +64,24 @@ public class Article {
         this.votes = votes;
     }
 
+    public boolean isCanVote() {
+        return canVote;
+    }
+
+    public void setCanVote(boolean canVote) {
+        this.canVote = canVote;
+    }
+
     @Override
     public String toString() {
         return "Article{" +
                 "id='" + id + '\'' +
                 ", title='" + title + '\'' +
-                ", link='" + link + '\'' +
+                ", content='" + content + '\'' +
                 ", poster='" + poster + '\'' +
                 ", time='" + time + '\'' +
                 ", votes='" + votes + '\'' +
+                ", canVote=" + canVote +
                 '}';
     }
 }

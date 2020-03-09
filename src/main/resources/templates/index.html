@@ -1,16 +1,270 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8"/>
-    <title>Index</title>
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"/>
 </head>
 <body>
-    <div id="app">
-        {{ message }}
+<div id="app">
+    <div style="width: 80%; margin-left: 10%; margin-bottom: 200px;">
+        <el-tabs v-model="activeName" @tab-click="changeList">
+            <el-tab-pane name="timeDimension">
+                <span slot="label"><i class="el-icon-sort"></i> 按时间排序</span>
+                <div style="height: 300px;overflow: auto;">
+                    <el-col :span="24" v-for="(article, index) in articles" :key="index" style="margin-bottom: 10px;">
+                        <div class="grid-content bg-purple-light">
+                            <el-row :gutter="0">
+                                <el-col :span="4">
+                                    <div class="grid-content bg-purple">
+                                        <el-row :gutter="0">
+                                            <el-button type="primary" icon="el-icon-arrow-up" disabled="article.canVote"
+                                                       class="level-arrow-up" @click="voteUp(index)">赞</el-button>
+                                        </el-row>
+                                        <el-row :gutter="0">
+                                            <el-button type="primary" icon="el-icon-arrow-down" disabled="article.canVote"
+                                                       class="level-arrow-down" @click="voteUp(index)">错</el-button>
+                                        </el-row>
+                                    </div>
+                                </el-col>
+                                <el-col :span="16">
+                                    <div class="grid-content bg-purple">
+                                        <el-row :gutter="2">
+                                            {{article.title}}
+                                        </el-row>
+                                        <el-row style="font-size: 10px;">
+                                            {{article.content}}
+                                        </el-row>
+                                    </div>
+                                </el-col>
+                                <el-col :span="4">
+                                    <div class="grid-content bg-purple ">
+                                        <el-badge class="item item-view" style="margin-left: 10px;">
+                                            <el-button size="small">票({{article.votes}})</el-button>
+                                        </el-badge>
+                                        <el-badge :value="12" class="item item-view" style="margin-left: 10px;">
+                                            <el-button size="small">评论</el-button>
+                                        </el-badge>
+                                    </div>
+                                </el-col>
+                            </el-row>
+                        </div>
+                    </el-col>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane name="scoreDimension">
+                <span slot="label"><i class="el-icon-sort"></i> 按热度排序</span>
+                <div style="height: 300px;overflow: auto;">
+                    <el-col :span="24" v-for="(article, index) in articles" :key="index" style="margin-bottom: 10px;">
+                        <div class="grid-content bg-purple-light">
+                            <el-row :gutter="0">
+                                <el-col :span="4">
+                                    <div class="grid-content bg-purple">
+                                        <el-row :gutter="0">
+                                            <el-button type="primary" icon="el-icon-arrow-up" disabled="article.canVote"
+                                                       class="level-arrow-up" @click="voteUp(index)">赞</el-button>
+                                        </el-row>
+                                        <el-row :gutter="0">
+                                            <el-button type="primary" icon="el-icon-arrow-down" disabled="article.canVote"
+                                                       class="level-arrow-down" @click="voteUp(index)">错</el-button>
+                                        </el-row>
+                                    </div>
+                                </el-col>
+                                <el-col :span="16">
+                                    <div class="grid-content bg-purple">
+                                        <el-row :gutter="2">
+                                            {{article.title}}
+                                        </el-row>
+                                        <el-row style="font-size: 10px;">
+                                            {{article.content}}
+                                        </el-row>
+                                    </div>
+                                </el-col>
+                                <el-col :span="4">
+                                    <div class="grid-content bg-purple ">
+                                        <el-badge class="item item-view" style="margin-left: 10px;">
+                                            <el-button size="small">票({{article.votes}})</el-button>
+                                        </el-badge>
+                                        <el-badge :value="12" class="item item-view" style="margin-left: 10px;">
+                                            <el-button size="small">评论</el-button>
+                                        </el-badge>
+                                    </div>
+                                </el-col>
+                            </el-row>
+                        </div>
+                    </el-col>
+                </div>
+            </el-tab-pane>
+        </el-tabs>
     </div>
+    <div style="position: fixed; bottom: 0px;width: 100%;">
+        <el-row :gutter="24">
+            <el-col><div class="grid-content bg-purple-light article-post">
+                <el-input
+                        type="text"
+                        autosize
+                        placeholder="请输入标题"
+                        v-model="pArticle.title">
+                </el-input>
+                <el-input
+                        type="textarea"
+                        :autosize="{ minRows: 3, maxRows: 3}"
+                        placeholder="请输入内容"
+                        v-model="pArticle.content">
+                </el-input>
+                <el-button type="danger" style="margin-top: 15px;" @click="postArticle">发布</el-button>
+            </div></el-col>
+        </el-row>
+    </div>
+</div>
 </body>
-<!-- 开发环境版本，包含了有帮助的命令行警告 -->
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<!--index.js-->
-<script src="/js/index.js"></script>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!--axios-->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                baseUrl: 'http://localhost:8080',
+                visible: false,
+                activeName: 'timeDimension',
+                articles: [],
+                pArticle: {}
+            }
+        },
+        created() {
+            var self = this;
+            self.getOrderTime();
+        },
+        methods: {
+            getOrderTime: function () {
+                var self = this;
+                axios.get(self.baseUrl + '/articles/getOrderTime')
+                    .then(function (response) {
+                        var articlesVar = response.data;
+                        if (articlesVar) {
+                            self.articles = articlesVar;
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            getOrderScore: function () {
+                var self = this;
+                axios.get(self.baseUrl + '/articles/getOrderScore')
+                    .then(function (response) {
+                        var articlesVar = response.data;
+                        if (articlesVar) {
+                            self.articles = articlesVar;
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            changeList: function (list) {
+                var self = this;
+                if (list && list.name === "timeDimension") {
+                    self.getOrderTime();
+                } else if (list && list.name === "scoreDimension") {
+                    self.getOrderScore();
+                }
+            },
+            postArticle: function () {
+                var self = this;
+                axios.post(self.baseUrl + '/articles/post', self.pArticle)
+                    .then(function (response) {
+                        if(response && response.data == "10000") {
+                            ELEMENT.Message("发布成功");
+                            self.refresh();
+                        } else {
+                            ELEMENT.Message("发布失败");
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        ELEMENT.Message("发布失败");
+                    });
+            },
+            refresh: function() {
+                var self = this;
+                if(self.activeName === 'timeDimension') {
+                    self.getOrderTime();
+                } else if(self.activeName === 'scoreDimension') {
+                    self.getOrderScore();
+                }
+            },
+            voteUp: function (index) {
+                var self = this;
+                axios.post(self.baseUrl + '/articles/vote/up', self.articles[index])
+                    .then(function (response) {
+                        if(response && response.data == "10000") {
+                            ELEMENT.Message("投票成功");
+                            self.refresh();
+                        } else {
+                            ELEMENT.Message("投票失败");
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        ELEMENT.Message("投票失败");
+                    });
+            },
+            voteDown: function (index) {
+                var self = this;
+                axios.post(self.baseUrl + '/articles/vote/down', self.articles[index])
+                    .then(function (response) {
+                        if(response && response.data == "10000") {
+                            ELEMENT.Message("投票成功");
+                            self.refresh();
+                        } else {
+                            ELEMENT.Message("投票失败");
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        ELEMENT.Message("投票失败");
+                    });
+            }
+        }
+    })
+</script>
+<style>
+    .bg-purple {
+        background: #d3dce6;
+    }
+
+    .bg-purple-light {
+        background: #f2be7e;
+    }
+
+    .grid-content {
+        min-height: 100px;
+    }
+
+    .level-arrow-up {
+        margin-left: 15px;
+        margin-top: 5px;
+    }
+
+    .level-arrow-down {
+        margin-left: 15px;
+        margin-top: 10px;
+    }
+
+    .item-view {
+        margin-top: 30px;
+        margin-left: 10px;
+    }
+    .article-post {
+        text-align: center;
+        padding: 15px;
+        height: 170px;
+    }
+</style>
 </html>

@@ -7,33 +7,8 @@
 </head>
 <body>
 <div id="app">
-    <div style="width: 500px">
-
-        <el-col :span="24"><div class="grid-content bg-purple-light">
-            <el-row :gutter="0">
-                <el-col :span="4"><div class="grid-content bg-purple">
-                    <el-row :gutter="0" >
-                        <el-button type="primary" icon="el-icon-arrow-up" class="level-arrow-up"></el-button>
-                    </el-row>
-                    <el-row :gutter="0" >
-                        <el-button type="primary" icon="el-icon-arrow-down" class="level-arrow-down"></el-button>
-                    </el-row>
-                </div></el-col>
-                <el-col :span="16"><div class="grid-content bg-purple">
-                    <el-row :gutter="2" >
-                       标题哈哈哈哈哈
-                    </el-row>
-                    <el-row style="font-size: 10px;">
-                        内容谁的卡里说的那肯定说了卡拉斯卡拉卡收到卡哈斯的灵魂靠大量收电话
-                    </el-row>
-                </div></el-col>
-                <el-col :span="4"><div class="grid-content bg-purple ">
-                    <el-badge :value="12" class="item item-view" >
-                        <el-button size="small">评论</el-button>
-                    </el-badge>
-                </div></el-col>
-            </el-row>
-        </div></el-col>
+    <div style="width: 80%; margin-left: 10%;                                                                                                   ">
+        <el-button disabled="canVote">默认按钮</el-button>
     </div>
 </div>
 </body>
@@ -46,8 +21,11 @@
         el: '#app',
         data: function() {
             return {
+                canVote: true,
                 visible: false,
-                itemNum: 10
+                itemNum: 10,
+                textarea1: '',
+                textarea2: ''
             }
         }
     })
@@ -57,7 +35,7 @@
         background: #d3dce6;
     }
     .bg-purple-light {
-        background: #e5e9f2;
+        background: #f2d652;
     }
     .grid-content {
         min-height: 100px;
@@ -73,6 +51,10 @@
     .item-view {
         margin-top: 30px;
         margin-left: 10px;
+    }
+    .article-post {
+        padding: 30px;
+        text-align: center;
     }
 
 </style>

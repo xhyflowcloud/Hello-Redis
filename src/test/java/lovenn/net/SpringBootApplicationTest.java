@@ -31,13 +31,13 @@ public class SpringBootApplicationTest {
         user.setUserId(String.valueOf(defaultGenerator.generate()));
         Article article = new Article();
         article.setTitle("地球");
-        article.setLink("http://wwww.baidu.com");
+        article.setContent("lalalallalalladakdsadskablkjbkdsbfaksdbkjcbakjsdbflkjfbklbdsclkasbkbcskjska");
         articleService.post(user, article);
     }
 
     @Test
     public void articleGetTimeTest() {
-        List<Article> articles = articleService.getArticleOrderTime(1);
+        List<Article> articles = articleService.getArticleOrderTime(new User(), 1);
         if(articles != null && articles.size() > 0) {
             for (Article article: articles)  {
                 System.out.println(article);

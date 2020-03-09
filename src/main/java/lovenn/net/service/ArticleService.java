@@ -10,7 +10,7 @@ public interface ArticleService {
     /**
      * 投票
      */
-    void vote(User user, Article article);
+    void vote(User user, Article article, Integer value);
 
     /**
      * 发布
@@ -19,13 +19,11 @@ public interface ArticleService {
 
     /**
      * 获取文章 时间
-     * @return
      */
-    List<Article> getArticleOrderTime(Integer page);
+    List<Article> getArticleOrderTime(User user, Integer page);
 
     /**
      * 获取文章 分数
-     * @return
      */
-    List<Article> getArticleOrderVote(Integer page);
+    List<Article> getArticleOrderScore(User user, Integer page);
 }

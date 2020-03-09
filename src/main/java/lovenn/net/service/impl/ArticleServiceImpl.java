@@ -29,74 +29,79 @@ public class ArticleServiceImpl implements ArticleService {
     private Generator defaultGenerator;
 
 
-
     @Override
-    public void vote(User user, Article article) {
-        long cutoff = System.currentTimeMillis()/1000 - ONE_WEEK_IN_SECONDS;
-        String scoreTime = jedisService.hget("articles:" + article.getId(), "time");
-        if(scoreTime != null && Long.valueOf(scoreTime) < cutoff) return;
+    public void vote(User user, Article article, Integer value) {
+        long cutoff = System.currentTimeMillis() / 1000 - ONE_WEEK_IN_SECONDS;
+        String scoreTime = jedisService.hget(article.getId(), "time");
+        //如果超期了 返回
+        if (scoreTime != null && Long.valueOf(scoreTime) < cutoff) return;
+        //如果已经投过票 返回
+        if(jedisService.sismember("voted:" + article.getId(), user.getUserId())) return;
+
         jedisService.sadd("voted:" + article.getId(), user.getUserId());
-        jedisService.zincrby("articles:score", VOTE_SCORE, "article:" + article.getId());
-        jedisService.hincrBy("article:" + article.getId(), "votes", 1);
+        jedisService.zincrby("article:score", VOTE_SCORE * value, article.getId());
+        jedisService.hincrBy(article.getId(), "votes", value);
     }
 
     @Override
     public void post(User user, Article article) {
-        article.setId(String.valueOf(defaultGenerator.generate()));
+        article.setId("article:" + defaultGenerator.generate());
         article.setPoster(user.getUserId());
         article.setVotes("0");
         //当前秒数
-        long now = System.currentTimeMillis()/1000;
+        long now = System.currentTimeMillis() / 1000;
         article.setTime(String.valueOf(now));
 
         //保存文章信息
-        jedisService.hset("article:" + article.getId(), "id", article.getId());
-        jedisService.hset("article:" + article.getId(), "title", article.getTitle());
-        jedisService.hset("article:" + article.getId(), "link", article.getLink());
-        jedisService.hset("article:" + article.getId(), "poster", article.getPoster());
-        jedisService.hset("article:" + article.getId(), "time", article.getTime());
-        jedisService.hset("article:" + article.getId(), "votes", article.getVotes());
+        jedisService.hset(article.getId(), "id", article.getId());
+        jedisService.hset(article.getId(), "title", article.getTitle());
+        jedisService.hset(article.getId(), "content", article.getContent());
+        jedisService.hset(article.getId(), "poster", article.getPoster());
+        jedisService.hset(article.getId(), "time", article.getTime());
+        jedisService.hset(article.getId(), "votes", article.getVotes());
 
         //插入到时间排序文章列表
-        jedisService.zadd("article:time", now, "article:" + article.getId());
-        jedisService.zadd("article:score", now + VOTE_SCORE, "article:" + article.getId());
+        jedisService.zadd("article:time", now, article.getId());
+        jedisService.zadd("article:score", now + VOTE_SCORE, article.getId());
     }
 
     @Override
-    public List<Article> getArticleOrderTime(Integer page) {
-        int start = (page-1) * ARTICLES_PER_PAGE;
+    public List<Article> getArticleOrderTime(User user, Integer page) {
+        int start = (page - 1) * ARTICLES_PER_PAGE;
         int end = start + ARTICLES_PER_PAGE - 1;
         List<Article> articles = new ArrayList<>(ARTICLES_PER_PAGE);
         Set<String> ids = jedisService.zrevrange("article:time", start, end);
-        for (String id: ids) {
+        for (String id : ids) {
             Map<String, String> map = jedisService.hgetAll(id);
             Article article = new Article();
             article.setId(map.get("id"));
             article.setTime(map.get("time"));
-            article.setLink(map.get("link"));
+            article.setContent(map.get("content"));
             article.setPoster(map.get("poster"));
             article.setTitle(map.get("title"));
             article.setVotes(map.get("votes"));
+            article.setCanVote(!jedisService.sismember("voted:" + id, user.getUserId()));
             articles.add(article);
         }
         return articles;
     }
 
     @Override
-    public List<Article> getArticleOrderVote(Integer page) {
-        int start = (page-1) * ARTICLES_PER_PAGE;
+    public List<Article> getArticleOrderScore(User user, Integer page) {
+        int start = (page - 1) * ARTICLES_PER_PAGE;
         int end = start + ARTICLES_PER_PAGE - 1;
         List<Article> articles = new ArrayList<>(ARTICLES_PER_PAGE);
         Set<String> ids = jedisService.zrevrange("article:score", start, end);
-        for (String id: ids) {
+        for (String id : ids) {
             Map<String, String> map = jedisService.hgetAll(id);
             Article article = new Article();
             article.setId(map.get("id"));
             article.setTime(map.get("time"));
-            article.setLink(map.get("link"));
+            article.setContent(map.get("content"));
             article.setPoster(map.get("poster"));
             article.setTitle(map.get("title"));
             article.setVotes(map.get("votes"));
+            article.setCanVote(!jedisService.sismember("voted:" + id, user.getUserId()));
             articles.add(article);
         }
         return articles;

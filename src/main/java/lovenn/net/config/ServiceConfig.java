@@ -15,7 +15,7 @@ public class ServiceConfig {
 //    @Value("redis.port")
     private String port = "6379";
 
-    @Bean("jedisService")
+    @Bean(name = "jedisService", destroyMethod = "")
     public Jedis jedisService() {
         JedisShardInfo jedisShardInfo = new JedisShardInfo("140.143.222.13", 6379);
         jedisShardInfo.setPassword("foobared");
