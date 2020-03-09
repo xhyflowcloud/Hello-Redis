@@ -144,7 +144,7 @@
         data: function () {
             return {
                 loginVisible: false,
-                baseUrl: 'http://localhost:8083',
+                baseUrl: 'http://lovenn.net:8083',
                 visible: false,
                 activeName: 'timeDimension',
                 articles: [],
@@ -176,12 +176,15 @@
                         if(_user) {
                             self.user = _user;
                             ELEMENT.Message("登录成功");
+                            self.refresh();
                         } else {
-                            ELEMENT.Message("发布失败");
+                            ELEMENT.Message("登录失败");
+                            self.user = {};
                         }
                     })
                     .catch(function (error) {
-                        ELEMENT.Message("发布失败");
+                        ELEMENT.Message("登录失败");
+                        self.user = {};
                     });
             },
             getOrderTime: function () {
@@ -225,6 +228,7 @@
                     .then(function (response) {
                         ELEMENT.Message(response.data);
                         self.refresh();
+                        self.pArticle = {};
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -241,7 +245,9 @@
             },
             voteUp: function (index) {
                 var self = this;
-                axios.post(self.baseUrl + '/articles/vote/up', self.articles[index])
+                var article = self.articles[index];
+                article.name = self.user.name;
+                axios.post(self.baseUrl + '/articles/vote/up', article)
                     .then(function (response) {
                         ELEMENT.Message(response.data);
                         self.refresh();
@@ -253,7 +259,9 @@
             },
             voteDown: function (index) {
                 var self = this;
-                axios.post(self.baseUrl + '/articles/vote/down', self.articles[index])
+                var article = self.articles[index];
+                article.name = self.user.name;
+                axios.post(self.baseUrl + '/articles/vote/down', article)
                     .then(function (response) {
                         ELEMENT.Message(response.data);
                         self.refresh();

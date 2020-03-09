@@ -23,11 +23,13 @@ public class ArticleController {
 
     @RequestMapping("/getOrderTime")
     public List<Article> getOrderTime(@RequestBody User user) {
+        if(user != null && user.getName() != null) user = userService.getUser(user.getName());
         return articleService.getArticleOrderTime(user, 1);
     }
 
     @RequestMapping("/getOrderScore")
     public List<Article> getOrderScore(@RequestBody User user) {
+        if(user != null && user.getName() != null) user = userService.getUser(user.getName());
         return articleService.getArticleOrderScore(user, 1);
     }
 
