@@ -80,7 +80,11 @@ public class ArticleServiceImpl implements ArticleService {
             article.setPoster(map.get("poster"));
             article.setTitle(map.get("title"));
             article.setVotes(map.get("votes"));
-            article.setCanVote(!jedisService.sismember("voted:" + id, user.getUserId()));
+            if(user != null && user.getUserId() != null) {
+                article.setVoted(jedisService.sismember("voted:" + id, user.getUserId()));
+            } else {
+                article.setVoted(true);
+            }
             articles.add(article);
         }
         return articles;
@@ -101,7 +105,11 @@ public class ArticleServiceImpl implements ArticleService {
             article.setPoster(map.get("poster"));
             article.setTitle(map.get("title"));
             article.setVotes(map.get("votes"));
-            article.setCanVote(!jedisService.sismember("voted:" + id, user.getUserId()));
+            if(user != null && user.getUserId() != null) {
+                article.setVoted(jedisService.sismember("voted:" + id, user.getUserId()));
+            } else {
+                article.setVoted(true);
+            }
             articles.add(article);
         }
         return articles;

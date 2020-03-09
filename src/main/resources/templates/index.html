@@ -7,6 +7,20 @@
 </head>
 <body>
 <div id="app">
+    <el-menu class="el-menu-demo" mode="horizontal">
+        <el-menu-item index="1" style="margin-left: 20px;" @click="refresh">看看吧</el-menu-item>
+        <el-menu-item index="3" style="float: right;margin-right: 20px;" @click="loginVisible = true" >{{loginname}}</el-menu-item>
+        <el-dialog title="登录" :visible.sync="loginVisible">
+            <el-form :model="user">
+                <el-form-item label="登录名" label-width="120px">
+                    <el-input v-model="user.name" autocomplete="off" placeholder="请输入登录名" style="width: 80%;"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="loginVisible = false;login()">登录</el-button>
+            </div>
+        </el-dialog>
+    </el-menu>
     <div style="width: 80%; margin-left: 10%; margin-bottom: 200px;">
         <el-tabs v-model="activeName" @tab-click="changeList">
             <el-tab-pane name="timeDimension">
@@ -18,11 +32,11 @@
                                 <el-col :span="4">
                                     <div class="grid-content bg-purple">
                                         <el-row :gutter="0">
-                                            <el-button type="primary" icon="el-icon-arrow-up" disabled="article.canVote"
+                                            <el-button type="primary" icon="el-icon-arrow-up" :disabled="article.voted"
                                                        class="level-arrow-up" @click="voteUp(index)">赞</el-button>
                                         </el-row>
                                         <el-row :gutter="0">
-                                            <el-button type="primary" icon="el-icon-arrow-down" disabled="article.canVote"
+                                            <el-button type="primary" icon="el-icon-arrow-down" :disabled="article.voted"
                                                        class="level-arrow-down" @click="voteUp(index)">错</el-button>
                                         </el-row>
                                     </div>
@@ -61,11 +75,11 @@
                                 <el-col :span="4">
                                     <div class="grid-content bg-purple">
                                         <el-row :gutter="0">
-                                            <el-button type="primary" icon="el-icon-arrow-up" disabled="article.canVote"
+                                            <el-button type="primary" icon="el-icon-arrow-up" :disabled="article.voted"
                                                        class="level-arrow-up" @click="voteUp(index)">赞</el-button>
                                         </el-row>
                                         <el-row :gutter="0">
-                                            <el-button type="primary" icon="el-icon-arrow-down" disabled="article.canVote"
+                                            <el-button type="primary" icon="el-icon-arrow-down" :disabled="article.voted"
                                                        class="level-arrow-down" @click="voteUp(index)">错</el-button>
                                         </el-row>
                                     </div>
@@ -129,21 +143,50 @@
         el: '#app',
         data: function () {
             return {
-                baseUrl: 'http://localhost:8080',
+                loginVisible: false,
+                baseUrl: 'http://localhost:8083',
                 visible: false,
                 activeName: 'timeDimension',
                 articles: [],
-                pArticle: {}
+                pArticle: {
+                },
+                user: {},
             }
         },
         created() {
             var self = this;
             self.getOrderTime();
         },
+        computed: {
+          loginname: function() {
+              var self = this;
+              if(self.user && self.user.name){
+                  return self.user.name;
+              } else {
+                  return "登录";
+              }
+          }
+        },
         methods: {
+            login: function() {
+                var self = this;
+                axios.post(self.baseUrl + '/articles/login', self.user)
+                    .then(function (response) {
+                        var _user = response.data;
+                        if(_user) {
+                            self.user = _user;
+                            ELEMENT.Message("登录成功");
+                        } else {
+                            ELEMENT.Message("发布失败");
+                        }
+                    })
+                    .catch(function (error) {
+                        ELEMENT.Message("发布失败");
+                    });
+            },
             getOrderTime: function () {
                 var self = this;
-                axios.get(self.baseUrl + '/articles/getOrderTime')
+                axios.post(self.baseUrl + '/articles/getOrderTime', self.user)
                     .then(function (response) {
                         var articlesVar = response.data;
                         if (articlesVar) {
@@ -156,7 +199,7 @@
             },
             getOrderScore: function () {
                 var self = this;
-                axios.get(self.baseUrl + '/articles/getOrderScore')
+                axios.post(self.baseUrl + '/articles/getOrderScore', self.user)
                     .then(function (response) {
                         var articlesVar = response.data;
                         if (articlesVar) {
@@ -177,14 +220,11 @@
             },
             postArticle: function () {
                 var self = this;
+                self.pArticle.name = self.user.name;
                 axios.post(self.baseUrl + '/articles/post', self.pArticle)
                     .then(function (response) {
-                        if(response && response.data == "10000") {
-                            ELEMENT.Message("发布成功");
-                            self.refresh();
-                        } else {
-                            ELEMENT.Message("发布失败");
-                        }
+                        ELEMENT.Message(response.data);
+                        self.refresh();
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -203,12 +243,8 @@
                 var self = this;
                 axios.post(self.baseUrl + '/articles/vote/up', self.articles[index])
                     .then(function (response) {
-                        if(response && response.data == "10000") {
-                            ELEMENT.Message("投票成功");
-                            self.refresh();
-                        } else {
-                            ELEMENT.Message("投票失败");
-                        }
+                        ELEMENT.Message(response.data);
+                        self.refresh();
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -219,12 +255,8 @@
                 var self = this;
                 axios.post(self.baseUrl + '/articles/vote/down', self.articles[index])
                     .then(function (response) {
-                        if(response && response.data == "10000") {
-                            ELEMENT.Message("投票成功");
-                            self.refresh();
-                        } else {
-                            ELEMENT.Message("投票失败");
-                        }
+                        ELEMENT.Message(response.data);
+                        self.refresh();
                     })
                     .catch(function (error) {
                         console.log(error);

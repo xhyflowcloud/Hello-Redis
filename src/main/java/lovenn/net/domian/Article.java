@@ -14,7 +14,9 @@ public class Article {
 
     private String votes;
 
-    private boolean canVote;
+    private boolean voted;
+
+    private String name;
 
     public String getId() {
         return id;
@@ -64,24 +66,19 @@ public class Article {
         this.votes = votes;
     }
 
-    public boolean isCanVote() {
-        return canVote;
+    public boolean isVoted() {
+        return voted;
     }
 
-    public void setCanVote(boolean canVote) {
-        this.canVote = canVote;
+    public void setVoted(boolean voted) {
+        this.voted = voted;
     }
 
-    @Override
-    public String toString() {
-        return "Article{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", poster='" + poster + '\'' +
-                ", time='" + time + '\'' +
-                ", votes='" + votes + '\'' +
-                ", canVote=" + canVote +
-                '}';
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

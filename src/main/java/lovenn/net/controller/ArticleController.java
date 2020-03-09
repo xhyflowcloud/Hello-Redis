@@ -3,9 +3,9 @@ package lovenn.net.controller;
 import lovenn.net.domian.Article;
 import lovenn.net.domian.User;
 import lovenn.net.service.ArticleService;
+import lovenn.net.service.UserService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -18,39 +18,61 @@ public class ArticleController {
     @Resource
     private ArticleService articleService;
 
+    @Resource
+    private UserService userService;
+
     @RequestMapping("/getOrderTime")
-    public List<Article> getOrderTime() {
-        return articleService.getArticleOrderTime(getUser(), 1);
+    public List<Article> getOrderTime(@RequestBody User user) {
+        return articleService.getArticleOrderTime(user, 1);
     }
 
     @RequestMapping("/getOrderScore")
-    public List<Article> getOrderScore() {
-        return articleService.getArticleOrderScore(getUser(), 1);
+    public List<Article> getOrderScore(@RequestBody User user) {
+        return articleService.getArticleOrderScore(user, 1);
     }
 
     @RequestMapping("/post")
     public String post(@RequestBody Article article) {
-        User user = getUser();
-        articleService.post(user, article);
-        return "10000";
+        if (userService.isLogin(article.getName())) {
+            User user = userService.getUser(article.getName());
+            articleService.post(user, article);
+            return "发布成功";
+        }
+        return "请先登录";
     }
 
     @RequestMapping("/vote/up")
     public String voteUp(@RequestBody Article article) {
-        articleService.vote(getUser(), article, 1);
-        return "10000";
+        if (userService.isLogin(article.getName())) {
+            User user = userService.getUser(article.getName());
+            articleService.vote(user, article, 1);
+            return "投票成功";
+        }
+        return "请先登录";
     }
 
     @RequestMapping("/vote/down")
     public String voteDown(@RequestBody Article article) {
-        articleService.vote(getUser(), article, -1);
-        return "10000";
+        if (userService.isLogin(article.getName())) {
+            User user = userService.getUser(article.getName());
+            articleService.vote(user, article, -1);
+            return "投票成功";
+        }
+        return "请先登录";
     }
 
-    private User getUser() {
-        User user = new User();
-        user.setName("sunyanan");
-        user.setUserId("10000000");
-        return user;
+    @RequestMapping("/login")
+    public User login(@RequestBody User user) {
+        if (user == null) return null;
+        User user1 = userService.getUser(user.getName());
+        if (user1 != null) {
+            userService.login(user1);
+        }
+        if (userService.isLogin(user.getName())) {
+            user.setState("stated");
+            return user;
+        }
+        return null;
     }
+
 }
