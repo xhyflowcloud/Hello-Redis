@@ -6,8 +6,6 @@ public class User {
 
     private String userId;
 
-    private String state;
-
     public String getName() {
         return name;
     }
@@ -22,13 +20,5 @@ public class User {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
     }
 }
