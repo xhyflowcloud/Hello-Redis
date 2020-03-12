@@ -144,7 +144,7 @@
         data: function () {
             return {
                 loginVisible: false,
-                baseUrl: 'http://lovenn.net:8083',
+                baseUrl: 'http://localhost:8083',
                 visible: false,
                 activeName: 'timeDimension',
                 articles: [],
@@ -170,11 +170,11 @@
         methods: {
             login: function() {
                 var self = this;
+                self.user.userId = self.user.name;
                 axios.post(self.baseUrl + '/articles/login', self.user)
                     .then(function (response) {
-                        var _user = response.data;
-                        if(_user) {
-                            self.user = _user;
+                        var result = response.data;
+                        if(result == "SUCCESS") {
                             ELEMENT.Message("登录成功");
                             self.refresh();
                         } else {
@@ -189,7 +189,7 @@
             },
             getOrderTime: function () {
                 var self = this;
-                axios.post(self.baseUrl + '/articles/getOrderTime', self.user)
+                axios.get(self.baseUrl + '/articles/getOrderTime')
                     .then(function (response) {
                         var articlesVar = response.data;
                         if (articlesVar) {
@@ -202,7 +202,7 @@
             },
             getOrderScore: function () {
                 var self = this;
-                axios.post(self.baseUrl + '/articles/getOrderScore', self.user)
+                axios.post(self.baseUrl + '/articles/getOrderScore')
                     .then(function (response) {
                         var articlesVar = response.data;
                         if (articlesVar) {
@@ -223,7 +223,6 @@
             },
             postArticle: function () {
                 var self = this;
-                self.pArticle.name = self.user.name;
                 axios.post(self.baseUrl + '/articles/post', self.pArticle)
                     .then(function (response) {
                         ELEMENT.Message(response.data);
@@ -246,7 +245,6 @@
             voteUp: function (index) {
                 var self = this;
                 var article = self.articles[index];
-                article.name = self.user.name;
                 axios.post(self.baseUrl + '/articles/vote/up', article)
                     .then(function (response) {
                         ELEMENT.Message(response.data);
@@ -260,7 +258,6 @@
             voteDown: function (index) {
                 var self = this;
                 var article = self.articles[index];
-                article.name = self.user.name;
                 axios.post(self.baseUrl + '/articles/vote/down', article)
                     .then(function (response) {
                         ELEMENT.Message(response.data);

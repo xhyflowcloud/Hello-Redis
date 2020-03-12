@@ -10,7 +10,7 @@ public class SimpleMD5Util {
         try {
             MessageDigest md5 = MessageDigest.getInstance("MD5");
             byte[] bytes = md5.digest(dataStr.getBytes());
-            System.out.println(byte2Hex(bytes));
+            return byte2Hex(bytes);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
