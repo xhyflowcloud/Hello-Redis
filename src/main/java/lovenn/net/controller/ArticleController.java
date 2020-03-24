@@ -102,7 +102,7 @@ public class ArticleController {
         User user0 = userService.getUser(user.getUserId());
         if (user0 != null) {
             Cookie cookie = new Cookie("token", SimpleMD5Util.encrypt(user.getUserId()));
-            cookie.setMaxAge(60*5);
+            cookie.setMaxAge(60 * 5);
             response.addCookie(cookie);
             Login login = new Login();
             login.setUserId(user.getUserId());
